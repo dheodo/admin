@@ -1170,7 +1170,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                     }
                   }
                 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[800px] overflow-y-auto pr-1"
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 max-h-[800px] overflow-y-auto pr-1"
               >
                 {filteredProjects.map((project, idx) => (
                   <motion.div
@@ -1183,7 +1183,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                     className="group flex flex-col bg-zinc-950/40 border border-zinc-800/80 rounded-xl hover:bg-zinc-950 hover:border-zinc-700 hover:shadow-lg transition-all relative overflow-hidden"
                   >
                     {/* Thumbnail preview on top */}
-                    <div className="w-full h-32 bg-zinc-950 overflow-hidden border-b border-zinc-800 shrink-0 relative">
+                    <div className="w-full h-48 bg-zinc-950 overflow-hidden border-b border-zinc-800 shrink-0 relative">
                       {project.image ? (
                         <img 
                           src={extractUrlFromHtml(project.image)} 
