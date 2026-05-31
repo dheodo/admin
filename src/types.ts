@@ -19,17 +19,14 @@ export interface Project {
   galleryImages?: string[];
 }
 
-export type CategoryType = 'Residential' | 'Commercial' | 'Renovation' | 'Kitchen & Bath' | 'Office Design' | 'Retail' | 'Millwork' | 'Other';
+export type CategoryType = 'Residential' | 'Commercial' | 'Renovation' | 'Kitchen & Bath' | 'Office Design';
 
 export const CATEGORIES: CategoryType[] = [
   'Residential',
   'Commercial',
   'Renovation',
   'Kitchen & Bath',
-  'Office Design',
-  'Retail',
-  'Millwork',
-  'Other'
+  'Office Design'
 ];
 
 export interface ProjectFormData {
