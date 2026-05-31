@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A project showcase item in the portfolio containing name, subtitle, category, image, and verbose details",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the project document"
+        },
+        "name": {
+          "type": "string",
+          "description": "The visual name/title of the project"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "A short engaging subtitle or tagline"
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the project (e.g. Design, Development, AI, Marketing)"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL link to the project showcase image"
+        },
+        "detail": {
+          "type": "string",
+          "description": "A detailed explanation of the project features, impact, and notes"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "The Google User UUID who published or edited the project"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC timestamp of exact creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC timestamp of latest update"
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical location or region of the refurbishment (e.g., Beverly Hills, London)"
+        },
+        "year": {
+          "type": "string",
+          "description": "The year of completion or execution (e.g., 2026)"
+        },
+        "showInCarousel": {
+          "type": "boolean",
+          "description": "Whether to display this project in the homepage hero carousel"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "subtitle",
+        "category",
+        "imageUrl",
+        "ownerId",
+        "createdAt",
+        "updatedAt",
+        "location",
+        "year"
+      ]
+    }
+  },
+  "firestore": {
+    "projects/{projectId}": {
+      "schema": "Project",
+      "description": "Main projects collection for showcasing portfolio items"
+    },
+    "project/{projectId}": {
+      "schema": "Project",
+      "description": "Singular project collection conforming to user's literal naming request"
+    },
+    "oroject/{projectId}": {
+      "schema": "Project",
+      "description": "Fallback matching the specific phonetic typo 'oroject' provided by the user"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Default
+    match /{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Helper functions
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create: if isSignedIn() 
+        && isEmailVerified()
+        && isValidProject(incoming());
+      allow update: if isSignedIn() 
+        && isEmailVerified()
+        && isValidProject(incoming())
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isSignedIn() 
+        && isEmailVerified();
+    }
+
+    // Strict validation matcher of all required fields & field bounds to thwart Denial-of-Wallet attacks
+    function isValidProject(data) {
+      return data.keys().hasAll(['id', 'title', 'subtitle', 'category', 'image', 'location', 'year', 'aspectRatio', 'isFeatured', 'createdAt'])
+        && data.id is string
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.subtitle is string && data.subtitle.size() > 0 && data.subtitle.size() <= 500
+        && data.category is string && data.category.size() > 0 && data.category.size() <= 100
+        && data.image is string && data.image.size() > 0 && data.image.size() <= 200000
+        && (!data.keys().hasAny(['description']) || (data.description is string && data.description.size() >= 0 && data.description.size() <= 60000))
+        && data.location is string && data.location.size() >= 0 && data.location.size() <= 150
+        && data.year is string && data.year.size() >= 0 && data.year.size() <= 20
+        && data.aspectRatio is string && data.aspectRatio.size() > 0 && data.aspectRatio.size() <= 50
+        && data.isFeatured is bool
+        && (!data.keys().hasAny(['showInCarousel']) || (data.showInCarousel is bool))
+        && (!data.keys().hasAny(['galleryImages']) || (data.galleryImages is list))
+        && (!data.keys().hasAny(['name']) || (data.name is string && data.name.size() <= 200))
+        && (!data.keys().hasAny(['imageUrl']) || (data.imageUrl is string && data.imageUrl.size() <= 200000))
+        && (!data.keys().hasAny(['detail']) || (data.detail is string && data.detail.size() >= 0 && data.detail.size() <= 60000));
+    }
+  }
+}
