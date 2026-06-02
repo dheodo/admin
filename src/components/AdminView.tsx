@@ -51,28 +51,44 @@ const handleImageFileUpload = (
       const canvas = document.createElement('canvas');
       let width = img.width;
       let height = img.height;
-      const MAX_SIZE = 1200; // Limit max dimension to fit within Firestore limit safely
-      if (width > height) {
-        if (width > MAX_SIZE) {
-          height = Math.round((height * MAX_SIZE) / width);
-          width = MAX_SIZE;
+      const MAX_SIZE = 1200; // Limit max dimension 
+
+      // Recursive compression function
+      const compress = (quality: number): string => {
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width);
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height);
+            height = MAX_SIZE;
+          }
         }
-      } else {
-        if (height > MAX_SIZE) {
-          width = Math.round((width * MAX_SIZE) / height);
-          height = MAX_SIZE;
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          return canvas.toDataURL('image/jpeg', quality);
         }
+        return '';
+      };
+
+      let currentQuality = 0.8;
+      let compressedBase64 = compress(currentQuality);
+
+      // Check size and re-compress if necessary (Firestore limit is 2,000,000 characters)
+      while (compressedBase64.length > 1900000 && currentQuality > 0.1) {
+        currentQuality -= 0.1;
+        compressedBase64 = compress(currentQuality);
       }
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0, width, height);
-        // Use quality of 0.75 for jpeg
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
-        onSuccess(compressedBase64);
+      
+      if (compressedBase64.length > 1900000) {
+        onFailure('Image too large even after compression. Please upload a smaller image.');
       } else {
-        onSuccess(event.target?.result as string);
+        onSuccess(compressedBase64);
       }
     };
     img.onerror = () => {
@@ -757,6 +773,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                               (base64) => setFormData({ ...formData, imageUrl: base64 }),
                               (err) => setStatusMsg({ type: 'error', text: err })
                             );
+                            e.target.value = '';
                           }
                         }}
                       />
@@ -862,6 +879,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                                     (base64) => handleMoreImageChange(index, base64),
                                     (err) => setStatusMsg({ type: 'error', text: err })
                                   );
+                                  e.target.value = '';
                                 }
                               }}
                             />
