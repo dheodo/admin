@@ -24,14 +24,41 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.email_verified == true;
     }
 
+    function isAdmin() {
+      return isSignedIn() && isEmailVerified() && (
+        request.auth.token.email == "rajanichapte@gmail.com" ||
+        request.auth.token.email == "deathrb12@gmail.com"
+      );
+    }
+
     match /projects/{projectId} {
       allow read: if true;
-      allow create: if isSignedIn() 
+      allow create: if isAdmin() 
         && isValidProject(incoming());
-      allow update: if isSignedIn() 
+      allow update: if isAdmin() 
         && isValidProject(incoming())
         && incoming().createdAt == existing().createdAt;
-      allow delete: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /project/{projectId} {
+      allow read: if true;
+      allow create: if isAdmin() 
+        && isValidProject(incoming());
+      allow update: if isAdmin() 
+        && isValidProject(incoming())
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /oroject/{projectId} {
+      allow read: if true;
+      allow create: if isAdmin() 
+        && isValidProject(incoming());
+      allow update: if isAdmin() 
+        && isValidProject(incoming())
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
     }
 
     // Strict validation matcher of all required fields & field bounds to thwart Denial-of-Wallet attacks

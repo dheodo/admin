@@ -572,6 +572,36 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
     );
   }
 
+  // Restrict access to rajanichapte@gmail.com and deathrb12@gmail.com (current dev user)
+  const allowedEmails = ['rajanichapte@gmail.com', 'deathrb12@gmail.com'];
+  const isAuthorized = user.email && allowedEmails.includes(user.email.toLowerCase());
+
+  if (!isAuthorized) {
+    return (
+      <div className="max-w-md mx-auto text-center py-16 px-6 bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl space-y-6" id="admin-unauthorized-panel">
+        <div className="w-16 h-16 bg-rose-950/20 flex items-center justify-center rounded-2xl mx-auto border border-rose-500/30 text-rose-500 shadow-sm">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="font-serif italic text-2xl text-white tracking-tight">Access Restricted</h2>
+          <p className="font-sans text-xs text-zinc-400 leading-relaxed">
+            Your account <strong className="text-zinc-250 font-bold text-zinc-100">{user.email}</strong> is not configured as an authorized administrator. 
+            Please sign out and log in using <strong className="text-amber-500">rajanichapte@gmail.com</strong>.
+          </p>
+        </div>
+
+        <button
+          id="admin-logout-btn-unauthorized"
+          onClick={handleSignOut}
+          className="w-full flex items-center justify-center gap-1.5 font-sans font-semibold text-xs text-zinc-300 bg-zinc-850 hover:bg-zinc-800 hover:text-white border border-zinc-800 px-4 py-3.5 rounded-xl transition-all cursor-pointer"
+        >
+          Sign Out of This Account
+          <LogOut className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-10" id="admin-workspace">
       <motion.div 
