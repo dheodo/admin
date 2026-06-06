@@ -1,5 +1,5 @@
 {
-  "name": "MaintenanceMasters",
+  "name": "Maintenance Masters",
   "description": "A dynamic portfolio showcase database connected directly to cloud Firestore, featuring a secure Google authenticated administrator administration panel to add, update, and delete project showcases with real-time syncing.",
   "requestFramePermissions": [],
   "majorCapabilities": [
