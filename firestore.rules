@@ -80,7 +80,8 @@ service cloud.firestore {
         && (!data.keys().hasAny(['galleryImages']) || (data.galleryImages is list))
         && (!data.keys().hasAny(['name']) || (data.name is string && data.name.size() <= 200))
         && (!data.keys().hasAny(['imageUrl']) || (data.imageUrl is string && data.imageUrl.size() <= 2000000))
-        && (!data.keys().hasAny(['detail']) || (data.detail is string && data.detail.size() >= 0 && data.detail.size() <= 60000));
+        && (!data.keys().hasAny(['detail']) || (data.detail is string && data.detail.size() >= 0 && data.detail.size() <= 60000))
+        && (!data.keys().hasAny(['num']) || (data.num is int));
     }
   }
 }

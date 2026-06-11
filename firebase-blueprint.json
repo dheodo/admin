@@ -54,6 +54,10 @@
         "showInCarousel": {
           "type": "boolean",
           "description": "Whether to display this project in the homepage hero carousel"
+        },
+        "num": {
+          "type": "integer",
+          "description": "The custom display order/sequence number of the project"
         }
       },
       "required": [

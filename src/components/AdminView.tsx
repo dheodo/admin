@@ -127,7 +127,8 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
     year: '',
     galleryImages: [],
     isFeatured: false,
-    showInCarousel: false
+    showInCarousel: false,
+    num: undefined
   });
 
   // Action messages
@@ -174,6 +175,18 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
     return locMatch && yearMatch;
   });
 
+  // Sort projects by sequence order 'num' (ascending) first, then by 'createdAt' (newest first)
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    const numA = typeof a.num === 'number' ? a.num : Infinity;
+    const numB = typeof b.num === 'number' ? b.num : Infinity;
+    if (numA !== numB) {
+      return numA - numB;
+    }
+    const dateA = a.createdAt?.seconds || a.createdAt || 0;
+    const dateB = b.createdAt?.seconds || b.createdAt || 0;
+    return Number(dateB) - Number(dateA);
+  });
+
   // Sign In using Google Single Sign-on Popup
   const handleGoogleSignIn = async () => {
     setAuthLoading(true);
@@ -213,7 +226,8 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
       year: '',
       galleryImages: [],
       isFeatured: false,
-      showInCarousel: false
+      showInCarousel: false,
+      num: undefined
     });
     setIsEditing(false);
     setEditingId(null);
@@ -234,6 +248,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
       (formData.galleryImages || []).every(img => img.trim() === '') &&
       formData.isFeatured === false &&
       formData.showInCarousel === false &&
+      formData.num === undefined &&
       formData.category === 'Residential'
     );
     
@@ -374,7 +389,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
         const oldRecord = projects.find(p => p.id === editingId);
         if (!oldRecord) throw new Error('Existing project details not found to perform update.');
 
-        const updatePayload = {
+        const updatePayload: any = {
           id: docId,
           title: formData.name.trim(),
           name: formData.name.trim(),
@@ -393,12 +408,16 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
           galleryImages: formData.galleryImages.filter(url => url.trim() !== '')
         };
 
+        if (formData.num !== undefined && formData.num !== null && !isNaN(formData.num)) {
+          updatePayload.num = Number(formData.num);
+        }
+
         // Write to DB
         await setDoc(doc(db, 'projects', docId), updatePayload);
         setStatusMsg({ type: 'success', text: `Project "${formData.name}" successfully updated in cloud database.` });
       } else {
         // Document create payload
-        const createPayload = {
+        const createPayload: any = {
           id: docId,
           title: formData.name.trim(),
           name: formData.name.trim(),
@@ -416,6 +435,10 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
           createdAt: Date.now(),
           galleryImages: formData.galleryImages.filter(url => url.trim() !== '')
         };
+
+        if (formData.num !== undefined && formData.num !== null && !isNaN(formData.num)) {
+          createPayload.num = Number(formData.num);
+        }
 
         await setDoc(doc(db, 'projects', docId), createPayload);
         setStatusMsg({ type: 'success', text: `New Project "${formData.name}" successfully created and saved.` });
@@ -448,7 +471,8 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
       year: project.year || '',
       galleryImages: project.galleryImages || (project as any).moreImages || [],
       isFeatured: project.isFeatured ?? false,
-      showInCarousel: project.showInCarousel ?? false
+      showInCarousel: project.showInCarousel ?? false,
+      num: project.num
     });
     setEditingId(project.id);
     setIsEditing(true);
@@ -965,8 +989,8 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                 )}
               </div>
 
-              {/* Location and Year Fields with Quick-Select Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Location, Year and Sequence Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-zinc-400 font-sans" htmlFor="proj-location">
                     Project Location / Region *
@@ -997,7 +1021,22 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                     value={formData.year || ''}
                     onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                   />
+                </div>
 
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-400 font-sans" htmlFor="proj-num">
+                    Display Sequence / Order (num)
+                  </label>
+                  <input
+                    id="proj-num"
+                    type="number"
+                    placeholder="e.g. 1 (lower displays first)"
+                    min="0"
+                    step="1"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs font-sans text-zinc-100 placeholder-zinc-600 focus:outline-hidden focus:ring-1.5 focus:ring-amber-500/50 focus:border-zinc-700 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:margin-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:margin-0 [&::-webkit-inner-spin-button]:appearance-none"
+                    value={formData.num !== undefined ? formData.num : ''}
+                    onChange={(e) => setFormData({ ...formData, num: e.target.value === '' ? undefined : parseInt(e.target.value, 10) })}
+                  />
                 </div>
               </div>
 
@@ -1201,7 +1240,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                 <div className="w-8 h-8 border-3 border-zinc-800 border-t-amber-500 rounded-full animate-spin"></div>
                 <span className="text-[11px] text-zinc-550 text-zinc-500 font-sans">Connecting...</span>
               </div>
-            ) : filteredProjects.length === 0 ? (
+            ) : sortedProjects.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-zinc-800 rounded-xl bg-zinc-950/35">
                 <HelpCircle className="mx-auto w-8 h-8 text-zinc-600 mb-2" />
                 <p className="font-sans text-xs font-semibold text-zinc-400">No matching projects found</p>
@@ -1220,7 +1259,7 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                 }}
                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 max-h-[800px] overflow-y-auto pr-1"
               >
-                {filteredProjects.map((project, idx) => (
+                {sortedProjects.map((project, idx) => (
                   <motion.div
                     key={project.id}
                     variants={{
@@ -1257,6 +1296,11 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
                           <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-zinc-100 text-zinc-900 text-[8px] font-bold rounded uppercase tracking-wider shadow-lg">
                             <LayoutTemplate className="w-2 h-2" />
                             Hero
+                          </span>
+                        )}
+                        {project.num !== undefined && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-950/90 text-indigo-300 border border-indigo-500/30 text-[8px] font-semibold font-mono rounded uppercase tracking-wider shadow-lg">
+                            Seq: {project.num}
                           </span>
                         )}
                       </div>

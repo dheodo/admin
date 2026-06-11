@@ -17,6 +17,7 @@ export interface Project {
   showInCarousel?: boolean;
   createdAt: any;
   galleryImages?: string[];
+  num?: number;
 }
 
 export type CategoryType = 'Residential' | 'Commercial' | 'Renovation' | 'Kitchen & Bath' | 'Office Design';
@@ -40,4 +41,5 @@ export interface ProjectFormData {
   galleryImages: string[];
   isFeatured: boolean;
   showInCarousel: boolean;
+  num?: number;
 }
