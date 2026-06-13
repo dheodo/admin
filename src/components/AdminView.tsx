@@ -596,8 +596,8 @@ export default function AdminView({ user, projects, loading, onRefresh }: AdminV
     );
   }
 
-  // Restrict access to rajanichapte@gmail.com, deathrb12@gmail.com, sunilas1711@gmail.com, and maintenancemasters2001@gmail.com
-  const allowedEmails = ['rajanichapte@gmail.com', 'deathrb12@gmail.com', 'sunilas1711@gmail.com', 'maintenancemasters2001@gmail.com'];
+  // Restrict access to sunilas1711@gmail.com, and maintenancemasters2001@gmail.com
+  const allowedEmails = ['sunilas1711@gmail.com', 'maintenancemasters2001@gmail.com'];
   const isAuthorized = user.email && allowedEmails.includes(user.email.toLowerCase());
 
   if (!isAuthorized) {
