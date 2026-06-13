@@ -20,14 +20,19 @@ export interface Project {
   num?: number;
 }
 
-export type CategoryType = 'Residential' | 'Commercial' | 'Renovation' | 'Kitchen & Bath' | 'Office Design';
+export type CategoryType = 'Residential' | 'Commercial' | 'Renovation' | 'Kitchen & Bath' | 'Office Design' | 'Plumber' | 'Furniture Maker' | 'Painting' | 'Roofing Services' | 'Electrician';
 
 export const CATEGORIES: CategoryType[] = [
   'Residential',
   'Commercial',
   'Renovation',
   'Kitchen & Bath',
-  'Office Design'
+  'Office Design',
+  'Plumber',
+  'Furniture Maker',
+  'Painting',
+  'Roofing Services',
+  'Electrician'
 ];
 
 export interface ProjectFormData {
