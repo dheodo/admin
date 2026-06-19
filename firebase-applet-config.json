@@ -1,10 +1,10 @@
 {
-  "projectId": "gen-lang-client-0940653229",
-  "appId": "1:496203359480:web:149e036ee79f6fc94dc70d",
-  "apiKey": "AIzaSyDGHJLYG1ajImlJkrMJ3Z-Fy7QghvoExEg",
-  "authDomain": "gen-lang-client-0940653229.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-2b9fe8c0-4353-45b0-a58a-1abc173b1f09",
-  "storageBucket": "gen-lang-client-0940653229.firebasestorage.app",
-  "messagingSenderId": "496203359480",
+  "projectId": "maintenance-masters",
+  "appId": "1:108913184293:web:666506c5e44dc25e2ab9cc",
+  "apiKey": "AIzaSyCzO361tq0bu9-SJDhoT8lhrecLHhVH_zk",
+  "authDomain": "maintenance-masters.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "maintenance-masters.firebasestorage.app",
+  "messagingSenderId": "108913184293",
   "measurementId": ""
 }

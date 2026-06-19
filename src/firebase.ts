@@ -12,8 +12,11 @@ import firebaseConfig from '../firebase-applet-config.json';
 const app = initializeApp(firebaseConfig);
 
 // Create Firestore and Auth Exports
-// CRITICAL: The app will break without specifying firestoreDatabaseId
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+// CRITICAL: The app will break without specifying firestoreDatabaseId unless it is the default database
+const dbId = firebaseConfig.firestoreDatabaseId;
+export const db = dbId && dbId !== '(default)' && dbId !== ''
+  ? getFirestore(app, dbId)
+  : getFirestore(app);
 export const auth = getAuth(app);
 
 // Operational definitions for standard Firestore errors per guidelines
